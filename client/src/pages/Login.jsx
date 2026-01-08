@@ -1,0 +1,33 @@
+import { useState } from 'react';
+import { Container, Typography, TextField, Button, Box, Alert } from '@mui/material';
+import axios from 'axios';
+
+export default function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+      localStorage.setItem('user', JSON.stringify(res.data));
+      window.location.href = '/movies';
+    } catch (err) {
+      setError(err.response?.data?.message || 'Đăng nhập thất bại');
+    }
+  };
+
+  return (
+    <Container maxWidth="xs" sx={{ mt: 8 }}>
+      <Typography variant="h4" gutterBottom align="center">Đăng nhập</Typography>
+      <Box component="form" onSubmit={handleSubmit}>
+        <TextField label="Tên đăng nhập" fullWidth margin="normal" value={username} onChange={e => setUsername(e.target.value)} />
+        <TextField label="Mật khẩu" type="password" fullWidth margin="normal" value={password} onChange={e => setPassword(e.target.value)} />
+        {error && <Alert severity="error">{error}</Alert>}
+        <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>Đăng nhập</Button>
+      </Box>
+    </Container>
+  );
+} 
